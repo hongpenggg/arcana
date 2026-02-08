@@ -23,7 +23,7 @@ export const getTarotReading = async (
 
   try {
     const result = await ai.models.generateContent({
-      model: 'gemini-3.0-flash-exp',
+      model: 'gemini-2.0-flash',
       contents: prompt
     });
     return result.text || '';
@@ -44,7 +44,7 @@ export const getCardMeaning = async (cardName: string): Promise<string> => {
 
   try {
     const result = await ai.models.generateContent({
-      model: 'gemini-3.0-flash-exp',
+      model: 'gemini-2.0-flash',
       contents: prompt
     });
     return result.text || '';
