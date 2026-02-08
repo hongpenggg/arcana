@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Spread, ReadingState, CardData } from '../types';
 import { ALL_CARDS } from '../constants';
 import Card from './Card';
-import { GoogleGenerativeAI } from "@google/genai";
+import { GoogleGenAI } from "@google/genai";
 import ReactMarkdown from 'react-markdown';
 
 interface ReadingRoomProps {
@@ -74,8 +74,7 @@ const ReadingRoom: React.FC<ReadingRoomProps> = ({ spread, onReset, isTutorialMo
         throw new Error('Gemini API key not configured. Please add VITE_GEMINI_API_KEY to your repository secrets.');
       }
 
-      const genAI = new GoogleGenerativeAI(apiKey);
-      const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+      const ai = new GoogleGenAI({ apiKey });
       
       const cardSummaries = drawnCards.map((card, i) => {
         const pos = spread.positions[i];
@@ -107,11 +106,14 @@ const ReadingRoom: React.FC<ReadingRoomProps> = ({ spread, onReset, isTutorialMo
       A closing thought or affirmation.
       `;
 
-      const result = await model.generateContent(prompt);
-      const response = await result.response;
-      const text = response.text();
+      const result = await ai.models.generateContent({
+        model: 'gemini-2.0-flash-exp',
+        contents: prompt
+      });
       
-      setAiReading(text || "The mists are too thick to see clearly right now.");
+      const text = result.text || "The mists are too thick to see clearly right now.";
+      
+      setAiReading(text);
       if (isTutorialMode) onTutorialComplete?.();
 
     } catch (e: any) {
