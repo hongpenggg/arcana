@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Spread, ReadingState, CardData } from '../types';
 import { ALL_CARDS } from '../constants';
 import Card from './Card';
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenerativeAI } from "@google/genai";
 import ReactMarkdown from 'react-markdown';
 
 interface ReadingRoomProps {
@@ -68,7 +68,15 @@ const ReadingRoom: React.FC<ReadingRoomProps> = ({ spread, onReset, isTutorialMo
   const generateFullReading = async () => {
     setIsLoadingAI(true);
     try {
-      const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+      const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+      
+      if (!apiKey) {
+        throw new Error('Gemini API key not configured. Please add VITE_GEMINI_API_KEY to your repository secrets.');
+      }
+
+      const genAI = new GoogleGenerativeAI(apiKey);
+      const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+      
       const cardSummaries = drawnCards.map((card, i) => {
         const pos = spread.positions[i];
         return `${pos.name}: ${card.name} (${reversedStates[i] ? 'Reversed' : 'Upright'}) - Context: ${pos.description}`;
@@ -99,20 +107,17 @@ const ReadingRoom: React.FC<ReadingRoomProps> = ({ spread, onReset, isTutorialMo
       A closing thought or affirmation.
       `;
 
-      const response = await ai.models.generateContent({ 
-        model: 'gemini-3-flash-preview', 
-        contents: prompt,
-        config: {
-          temperature: 0.7,
-        }
-      });
+      const result = await model.generateContent(prompt);
+      const response = await result.response;
+      const text = response.text();
       
-      setAiReading(response.text || "The mists are too thick to see clearly right now.");
+      setAiReading(text || "The mists are too thick to see clearly right now.");
       if (isTutorialMode) onTutorialComplete?.();
 
-    } catch (e) {
-      console.error(e);
-      setAiReading("The connection to the ethereal plane was interrupted. Please try again.");
+    } catch (e: any) {
+      console.error('Gemini API Error:', e);
+      const errorMessage = e?.message || 'Unknown error';
+      setAiReading(`⚠️ **Connection Error**\n\nThe connection to the ethereal plane was interrupted.\n\nError: ${errorMessage}\n\nPlease ensure your Gemini API key is properly configured in the repository secrets.`);
     } finally {
       setIsLoadingAI(false);
     }
