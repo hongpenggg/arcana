@@ -80,3 +80,5 @@ coverage/
 # System files
 Thumbs.db
 .DS_Store
+.env.example
+SECURITY.md
