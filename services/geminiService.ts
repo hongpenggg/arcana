@@ -1,4 +1,4 @@
-import { GoogleGenerativeAI } from '@google/genai';
+import { GoogleGenAI } from '@google/genai';
 
 const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 
@@ -6,10 +6,7 @@ if (!API_KEY) {
   throw new Error('VITE_GEMINI_API_KEY is not defined in environment variables');
 }
 
-const genAI = new GoogleGenerativeAI(API_KEY);
-
-// Use Gemini 3 Flash model
-const model = genAI.getGenerativeModel({ model: 'gemini-3-flash-preview' });
+const ai = new GoogleGenAI({ apiKey: API_KEY });
 
 export const getTarotReading = async (
   cards: string[],
@@ -25,9 +22,11 @@ export const getTarotReading = async (
   Provide a detailed tarot reading interpretation for these cards in this spread.`;
 
   try {
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    return response.text();
+    const result = await ai.models.generateContent({
+      model: 'gemini-2.0-flash-exp',
+      contents: prompt
+    });
+    return result.text || '';
   } catch (error) {
     console.error('Error generating tarot reading:', error);
     throw error;
@@ -44,9 +43,11 @@ export const getCardMeaning = async (cardName: string): Promise<string> => {
   - Keywords`;
 
   try {
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    return response.text();
+    const result = await ai.models.generateContent({
+      model: 'gemini-2.0-flash-exp',
+      contents: prompt
+    });
+    return result.text || '';
   } catch (error) {
     console.error('Error getting card meaning:', error);
     throw error;
