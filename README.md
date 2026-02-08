@@ -57,35 +57,35 @@ Arcana Mystica is a modern, AI-powered Tarot reading web application that combin
 <div align="center">
 
 ### 🏠 Sanctuary (Home)
-<img src=".github/assets/sanctuary.jpg" alt="Arcana Mystica Home" width="800"/>
+<img src=".github/assets/sanctuary.jpeg" alt="Arcana Mystica Home" width="800"/>
 
 *Welcome to the mystical sanctuary. Begin your journey into the Tarot.*
 
 ---
 
 ### 📚 Choose Your Spread
-<img src=".github/assets/reading.jpg" alt="Spread Selection" width="800"/>
+<img src=".github/assets/reading.jpeg" alt="Spread Selection" width="800"/>
 
 *Six carefully crafted spreads for different aspects of life.*
 
 ---
 
 ### 🃏 Interactive Reading
-<img src=".github/assets/hero.jpg" alt="Tarot Reading" width="800"/>
+<img src=".github/assets/hero.jpeg" alt="Tarot Reading" width="800"/>
 
 *Draw cards, reveal them one by one, and receive AI-powered interpretations.*
 
 ---
 
 ### 📖 Tarot Encyclopedia
-<img src=".github/assets/encyclopedia.jpg" alt="Card Encyclopedia" width="800"/>
+<img src=".github/assets/encyclopedia.jpeg" alt="Card Encyclopedia" width="800"/>
 
 *Explore all 78 cards with beautiful Rider-Waite imagery and detailed meanings.*
 
 ---
 
 ### 📚 Beginner's Guide
-<img src=".github/assets/guide.jpg" alt="Tarot Guide" width="800"/>
+<img src=".github/assets/guide.jpeg" alt="Tarot Guide" width="800"/>
 
 *Learn the fundamentals of Tarot reading and interpretation.*
 
