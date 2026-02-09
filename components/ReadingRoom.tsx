@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Spread, ReadingState, CardData } from '../types';
 import { ALL_CARDS } from '../constants';
 import Card from './Card';
-import { GoogleGenAI } from "@google/genai";
 import ReactMarkdown from 'react-markdown';
 
 interface ReadingRoomProps {
@@ -68,14 +67,12 @@ const ReadingRoom: React.FC<ReadingRoomProps> = ({ spread, onReset, isTutorialMo
   const generateFullReading = async () => {
     setIsLoadingAI(true);
     try {
-      const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+      const apiKey = import.meta.env.VITE_OPENROUTER_API_KEY;
       
       if (!apiKey) {
-        throw new Error('Gemini API key not configured. Please add VITE_GEMINI_API_KEY to your repository secrets.');
+        throw new Error('OpenRouter API key not configured. Please add VITE_OPENROUTER_API_KEY to your .env.local file or repository secrets.');
       }
 
-      const ai = new GoogleGenAI({ apiKey });
-      
       const cardSummaries = drawnCards.map((card, i) => {
         const pos = spread.positions[i];
         return `${pos.name}: ${card.name} (${reversedStates[i] ? 'Reversed' : 'Upright'}) - Context: ${pos.description}`;
@@ -106,20 +103,47 @@ const ReadingRoom: React.FC<ReadingRoomProps> = ({ spread, onReset, isTutorialMo
       A closing thought or affirmation.
       `;
 
-      const result = await ai.models.generateContent({
-        model: 'gemini-2.5-flash-lite',
-        contents: prompt
+      // Call OpenRouter API
+      const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${apiKey}`,
+          'Content-Type': 'application/json',
+          'HTTP-Referer': window.location.origin,
+          'X-Title': 'Arcana Mystica',
+        },
+        body: JSON.stringify({
+          model: 'openrouter/pony-alpha',
+          messages: [
+            {
+              role: 'system',
+              content: 'You are a mystical, wise, and highly experienced Tarot Reader who provides profound, tangible, and actionable readings.',
+            },
+            {
+              role: 'user',
+              content: prompt,
+            },
+          ],
+          temperature: 0.7,
+          max_tokens: 2000,
+        }),
       });
-      
-      const text = result.text || "The mists are too thick to see clearly right now.";
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(`OpenRouter API error: ${response.status} - ${JSON.stringify(errorData)}`);
+      }
+
+      const data = await response.json();
+      const text = data.choices[0]?.message?.content || "The mists are too thick to see clearly right now.";
       
       setAiReading(text);
       if (isTutorialMode) onTutorialComplete?.();
 
     } catch (e: any) {
-      console.error('Gemini API Error:', e);
+      console.error('OpenRouter API Error:', e);
       const errorMessage = e?.message || 'Unknown error';
-      setAiReading(`⚠️ **Connection Error**\n\nThe connection to the ethereal plane was interrupted.\n\nError: ${errorMessage}\n\nPlease ensure your Gemini API key is properly configured in the repository secrets.`);
+      setAiReading(`⚠️ **Connection Error**\n\nThe connection to the ethereal plane was interrupted.\n\nError: ${errorMessage}\n\nPlease ensure your OpenRouter API key is properly configured in .env.local or repository secrets.`);
     } finally {
       setIsLoadingAI(false);
     }
