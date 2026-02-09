@@ -72,7 +72,7 @@ const callOpenRouter = async (messages: OpenRouterMessage[]): Promise<string> =>
         'X-Title': APP_NAME,
       },
       body: JSON.stringify({
-        model: 'openrouter/pony-alpha',
+        model: 'openrouter/free',
         messages: messages,
         temperature: 0.7,
         max_tokens: 5000,
@@ -99,7 +99,7 @@ export const getTarotReading = async (
   const messages: OpenRouterMessage[] = [
     {
       role: 'system',
-      content: 'You are a mystical, wise, and highly experienced Tarot Reader who provides profound, tangible, and actionable readings.A humble student has come to you for readings regarding his cards. Be elegant and wise, yet helpful and personal.',
+      content: 'You are a Tarot Reader who provides profound, tangible, and actionable readings.A humble student has come to you for readings regarding his cards. Be elegant and wise, yet helpful and personal.',
     },
     {
       role: 'user',
@@ -118,7 +118,7 @@ export const getCardMeaning = async (cardName: string): Promise<string> => {
   const messages: OpenRouterMessage[] = [
     {
       role: 'system',
-      content: 'You are an experienced tarot reader who provides comprehensive card explanations.',
+      content: 'You are an experienced tarot reader who provides comprehensive card explanations. Be elegant and wise, yet helpful and personal.',
     },
     {
       role: 'user',

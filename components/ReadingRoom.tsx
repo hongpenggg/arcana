@@ -113,7 +113,7 @@ const ReadingRoom: React.FC<ReadingRoomProps> = ({ spread, onReset, isTutorialMo
           'X-Title': 'Arcana Mystica',
         },
         body: JSON.stringify({
-          model: 'openrouter/pony-alpha',
+          model: 'openrouter/free',
           messages: [
             {
               role: 'system',
