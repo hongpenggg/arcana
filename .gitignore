@@ -24,11 +24,9 @@ firebase-config.json
 # Environment variables (CRITICAL - contains API keys)
 .env
 .env.local
-.env.example
 .env.development.local
 .env.test.local
 .env.production.local
-.env.*
 
 # Dependency directories
 node_modules/
@@ -81,5 +79,3 @@ coverage/
 # System files
 Thumbs.db
 .DS_Store
-.env.example
-SECURITY.md
