@@ -8,7 +8,7 @@
 [![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
 [![Vite](https://img.shields.io/badge/Vite-6.2-646CFF?style=for-the-badge&logo=vite)](https://vite.dev/)
-[![OpenRouter](https://img.shields.io/badge/OpenRouter-Pony_Alpha-FF6B6B?style=for-the-badge)](https://openrouter.ai/)
+[![OpenRouter](https://img.shields.io/badge/OpenRouter-Pony_Alpha-FF6B6B?style=for-the-badge)](https://openrouter.ai/openrouter/pony-alpha)
 
 **Consult the Oracle for tangible, actionable advice.**
 

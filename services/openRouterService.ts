@@ -75,7 +75,7 @@ const callOpenRouter = async (messages: OpenRouterMessage[]): Promise<string> =>
         model: 'openrouter/pony-alpha',
         messages: messages,
         temperature: 0.7,
-        max_tokens: 2000,
+        max_tokens: 5000,
       } as OpenRouterRequest),
     });
 
