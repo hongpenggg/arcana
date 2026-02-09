@@ -99,7 +99,7 @@ export const getTarotReading = async (
   const messages: OpenRouterMessage[] = [
     {
       role: 'system',
-      content: 'You are a mystical, wise, and highly experienced Tarot Reader who provides profound, tangible, and actionable readings.',
+      content: 'You are a mystical, wise, and highly experienced Tarot Reader who provides profound, tangible, and actionable readings.A humble student has come to you for readings regarding his cards. Be elegant and wise, yet helpful and personal.',
     },
     {
       role: 'user',
