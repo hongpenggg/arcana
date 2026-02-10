@@ -71,14 +71,14 @@ Arcana Mystica is a modern, AI-powered Tarot reading web application that combin
 ---
 
 ### 🃏 Interactive Reading
-<img src=".github/assets/hero.jpeg" alt="Tarot Reading" width="800"/>
+<img src=".github/assets/encyclopedia.jpeg" alt="Tarot Reading" width="800"/>
 
 *Draw cards, reveal them one by one, and receive AI-powered interpretations.*
 
 ---
 
 ### 📖 Tarot Encyclopedia
-<img src=".github/assets/encyclopedia.jpeg" alt="Card Encyclopedia" width="800"/>
+<img src=".github/assets/hero.jpeg" alt="Card Encyclopedia" width="800"/>
 
 *Explore all 78 cards with beautiful Rider-Waite imagery and detailed meanings.*
 
