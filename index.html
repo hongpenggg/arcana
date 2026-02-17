@@ -2,7 +2,10 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#0f0c29" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <title>Arcana Mystica - Tarot Reader</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -16,6 +19,10 @@
         min-height: 100vh;
         color: #e2e8f0;
         overflow-x: hidden;
+        /* iOS safe area support */
+        padding-bottom: env(safe-area-inset-bottom);
+        padding-left: env(safe-area-inset-left);
+        padding-right: env(safe-area-inset-right);
       }
       h1, h2, h3, h4, h5, h6, .font-serif {
         font-family: 'Cinzel', serif;
@@ -109,6 +116,19 @@
       }
       .animate-glow {
         animation: glow-pulse 2s infinite;
+      }
+
+      /* Smooth scrolling for better mobile experience */
+      html {
+        scroll-behavior: smooth;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      /* Prevent text size adjustment on mobile */
+      body {
+        -webkit-text-size-adjust: 100%;
+        -moz-text-size-adjust: 100%;
+        -ms-text-size-adjust: 100%;
       }
     </style>
   <script type="importmap">
