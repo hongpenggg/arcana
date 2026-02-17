@@ -154,55 +154,55 @@ const ReadingRoom: React.FC<ReadingRoomProps> = ({ spread, onReset, isTutorialMo
 
   if (isShuffling) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh]">
-        <div className="relative w-32 h-48">
+      <div className="flex flex-col items-center justify-center min-h-[60vh] px-4">
+        <div className="relative w-24 h-36 sm:w-32 sm:h-48">
           <div className="absolute inset-0 bg-purple-900 border border-purple-500 rounded-xl animate-shuffle shadow-2xl"></div>
           <div className="absolute inset-0 bg-purple-900 border border-purple-500 rounded-xl" style={{ transform: 'rotate(2deg)'}}></div>
         </div>
-        <p className="mt-8 text-xl font-serif text-white tracking-widest animate-pulse">Shuffling the Deck...</p>
+        <p className="mt-6 sm:mt-8 text-lg sm:text-xl font-serif text-white tracking-widest animate-pulse">Shuffling the Deck...</p>
       </div>
     );
   }
 
   return (
-    <div className="max-w-7xl mx-auto p-4 md:p-8 animate-in fade-in duration-700 relative">
+    <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-8 py-4 md:py-8 animate-in fade-in duration-700 relative">
       
       {/* Tutorial Overlays */}
       {isTutorialMode && tutorialStep === 2 && !allCardsDrawn && (
-        <div className="absolute top-40 left-1/2 -translate-x-1/2 z-50 pointer-events-none">
-          <div className="bg-purple-600 text-white px-6 py-3 rounded-full animate-bounce shadow-[0_0_20px_rgba(147,51,234,0.8)] font-bold">
+        <div className="absolute top-32 sm:top-40 left-1/2 -translate-x-1/2 z-50 pointer-events-none px-4">
+          <div className="bg-purple-600 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-full animate-bounce shadow-[0_0_20px_rgba(147,51,234,0.8)] font-bold text-xs sm:text-sm text-center">
             Tap the deck to draw your card ↓
           </div>
         </div>
       )}
       
       {/* Header */}
-      <div className="flex justify-between items-center mb-8 glass-panel p-4 rounded-xl">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0 mb-6 sm:mb-8 glass-panel p-3 sm:p-4 rounded-xl">
         <div>
-          <h2 className="text-xl font-serif text-white">{spread.name}</h2>
-          <p className="text-xs text-purple-300 uppercase tracking-widest mt-1">
+          <h2 className="text-lg sm:text-xl font-serif text-white">{spread.name}</h2>
+          <p className="text-[10px] sm:text-xs text-purple-300 uppercase tracking-widest mt-1">
             {allCardsRevealed ? "Reading Complete" : "Draw and Reveal"}
           </p>
         </div>
         <button 
           onClick={onReset}
-          className="px-4 py-2 border border-purple-500/30 rounded-lg text-sm hover:bg-purple-500/20 transition-colors"
+          className="px-3 sm:px-4 py-2 border border-purple-500/30 rounded-lg text-xs sm:text-sm hover:bg-purple-500/20 transition-colors whitespace-nowrap"
         >
           New Reading
         </button>
       </div>
 
-      <div className="grid lg:grid-cols-12 gap-8">
+      <div className="grid gap-6 sm:gap-8 lg:grid-cols-12">
         
         {/* Left Side: The Spread Board */}
         <div className="lg:col-span-8 flex flex-col items-center">
           
           {/* Draw Pile */}
           {!allCardsDrawn && (
-            <div className="mb-12 text-center">
+            <div className="mb-8 sm:mb-12 text-center">
               <div 
                 onClick={handleDraw} 
-                className="relative cursor-pointer group w-32 h-48 md:w-40 md:h-64 mx-auto transition-transform active:scale-95"
+                className="relative cursor-pointer group w-24 h-36 sm:w-32 sm:h-48 md:w-40 md:h-64 mx-auto transition-transform active:scale-95"
               >
                  <div className="absolute top-2 left-2 w-full h-full bg-purple-900 rounded-xl border border-purple-500/30"></div>
                  <div className="absolute top-1 left-1 w-full h-full bg-purple-900 rounded-xl border border-purple-500/30"></div>
@@ -214,18 +214,18 @@ const ReadingRoom: React.FC<ReadingRoomProps> = ({ spread, onReset, isTutorialMo
           )}
 
           {/* Slots */}
-          <div className="flex flex-wrap justify-center gap-4 md:gap-8">
+          <div className="flex flex-wrap justify-center gap-3 sm:gap-4 md:gap-8 max-w-full">
             {spread.positions.map((pos, index) => {
               const card = drawnCards[index];
               const isRevealed = revealedIndices.includes(index);
               const isReversed = reversedStates[index];
 
               return (
-                <div key={pos.id} className="flex flex-col items-center gap-3 relative">
+                <div key={pos.id} className="flex flex-col items-center gap-2 sm:gap-3 relative">
                    {/* Tutorial Pointer for Reveal */}
                    {isTutorialMode && tutorialStep === 3 && card && !isRevealed && index === 0 && (
-                      <div className="absolute -top-12 z-50 pointer-events-none">
-                        <div className="bg-purple-600 text-white px-4 py-2 rounded-full animate-bounce shadow-lg text-xs font-bold whitespace-nowrap">
+                      <div className="absolute -top-10 sm:-top-12 z-50 pointer-events-none">
+                        <div className="bg-purple-600 text-white px-3 sm:px-4 py-1 sm:py-2 rounded-full animate-bounce shadow-lg text-[10px] sm:text-xs font-bold whitespace-nowrap">
                            Tap to reveal
                         </div>
                       </div>
@@ -234,8 +234,8 @@ const ReadingRoom: React.FC<ReadingRoomProps> = ({ spread, onReset, isTutorialMo
                   <div className="relative">
                     {/* Placeholder slot */}
                     {!card && (
-                      <div className="w-24 h-40 md:w-40 md:h-64 border-2 border-dashed border-white/10 rounded-xl flex items-center justify-center bg-white/5 shadow-inner">
-                        <span className="text-3xl text-white/10">{index + 1}</span>
+                      <div className="w-20 h-32 sm:w-24 sm:h-40 md:w-40 md:h-64 border-2 border-dashed border-white/10 rounded-xl flex items-center justify-center bg-white/5 shadow-inner">
+                        <span className="text-xl sm:text-2xl md:text-3xl text-white/10">{index + 1}</span>
                       </div>
                     )}
                     
@@ -252,8 +252,8 @@ const ReadingRoom: React.FC<ReadingRoomProps> = ({ spread, onReset, isTutorialMo
                       </div>
                     )}
                   </div>
-                  <div className="text-center max-w-[8rem] md:max-w-[10rem]">
-                    <span className="text-[10px] md:text-xs font-bold text-purple-400 uppercase tracking-wider">{pos.name}</span>
+                  <div className="text-center max-w-[5rem] sm:max-w-[8rem] md:max-w-[10rem]">
+                    <span className="text-[9px] sm:text-[10px] md:text-xs font-bold text-purple-400 uppercase tracking-wider leading-tight">{pos.name}</span>
                   </div>
                 </div>
               );
@@ -264,44 +264,44 @@ const ReadingRoom: React.FC<ReadingRoomProps> = ({ spread, onReset, isTutorialMo
           {allCardsRevealed && !aiReading && !isLoadingAI && (
              <button 
                onClick={generateFullReading}
-               className="mt-12 px-8 py-4 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full text-white font-bold tracking-widest shadow-[0_0_30px_rgba(147,51,234,0.4)] hover:shadow-[0_0_50px_rgba(147,51,234,0.6)] transform hover:-translate-y-1 transition-all flex items-center gap-3 animate-in slide-in-from-bottom"
+               className="mt-8 sm:mt-12 px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full text-white text-sm sm:text-base font-bold tracking-widest shadow-[0_0_30px_rgba(147,51,234,0.4)] hover:shadow-[0_0_50px_rgba(147,51,234,0.6)] transform hover:-translate-y-1 transition-all flex items-center gap-2 sm:gap-3 animate-in slide-in-from-bottom active:scale-95"
              >
-               <span className="text-xl">✨</span> CONSULT THE ORACLE
+               <span className="text-lg sm:text-xl">✨</span> CONSULT THE ORACLE
              </button>
           )}
 
           {isLoadingAI && (
-            <div className="mt-12 flex flex-col items-center">
-              <div className="w-12 h-12 border-4 border-purple-500 border-t-transparent rounded-full animate-spin mb-4"></div>
-              <p className="text-purple-300 animate-pulse font-serif">Communing with the spirits...</p>
+            <div className="mt-8 sm:mt-12 flex flex-col items-center">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 border-4 border-purple-500 border-t-transparent rounded-full animate-spin mb-3 sm:mb-4"></div>
+              <p className="text-sm sm:text-base text-purple-300 animate-pulse font-serif">Communing with the spirits...</p>
             </div>
           )}
         </div>
 
         {/* Right Side: Interpretation Panel */}
-        <div className="lg:col-span-4 flex flex-col h-full max-h-[80vh]">
-           <div className="glass-panel p-6 rounded-2xl flex-grow overflow-y-auto custom-scrollbar">
-             <h3 className="text-2xl font-serif text-white mb-6 border-b border-white/10 pb-4 sticky top-0 bg-transparent backdrop-blur-md z-10">Interpretation</h3>
+        <div className="lg:col-span-4 flex flex-col h-full max-h-none lg:max-h-[80vh] mt-6 lg:mt-0">
+           <div className="glass-panel p-4 sm:p-6 rounded-2xl flex-grow overflow-y-auto custom-scrollbar">
+             <h3 className="text-xl sm:text-2xl font-serif text-white mb-4 sm:mb-6 border-b border-white/10 pb-3 sm:pb-4 sticky top-0 bg-transparent backdrop-blur-md z-10">Interpretation</h3>
              
              {revealedIndices.length === 0 && (
-               <div className="h-full flex flex-col items-center justify-center text-gray-400 italic opacity-50">
-                 <span className="text-4xl mb-2">🎴</span>
-                 <p>Draw cards to begin...</p>
+               <div className="h-full flex flex-col items-center justify-center text-gray-400 italic opacity-50 py-8">
+                 <span className="text-3xl sm:text-4xl mb-2">🎴</span>
+                 <p className="text-sm sm:text-base">Draw cards to begin...</p>
                </div>
              )}
 
-             <div className="space-y-6 pb-20">
+             <div className="space-y-4 sm:space-y-6 pb-16 sm:pb-20">
                {/* AI Reading Result with ReactMarkdown */}
                {aiReading && (
-                 <div className="animate-in fade-in duration-1000 bg-purple-900/30 p-6 rounded-xl border border-purple-500/30 mb-8">
-                   <div className="prose prose-invert prose-purple max-w-none">
+                 <div className="animate-in fade-in duration-1000 bg-purple-900/30 p-4 sm:p-6 rounded-xl border border-purple-500/30 mb-6 sm:mb-8">
+                   <div className="prose prose-invert prose-purple max-w-none prose-sm sm:prose-base">
                      <ReactMarkdown
                         components={{
-                          h1: ({node, ...props}) => <h1 className="text-2xl font-serif text-purple-300 border-b border-purple-500/30 pb-2 mb-4" {...props} />,
-                          h2: ({node, ...props}) => <h2 className="text-xl font-bold text-white mt-6 mb-3 flex items-center gap-2" {...props} />,
-                          h3: ({node, ...props}) => <h3 className="text-lg font-semibold text-purple-200 mt-4 mb-2" {...props} />,
-                          p: ({node, ...props}) => <p className="mb-4 text-gray-200 leading-relaxed" {...props} />,
-                          ul: ({node, ...props}) => <ul className="list-disc pl-5 mb-4 text-gray-300" {...props} />,
+                          h1: ({node, ...props}) => <h1 className="text-xl sm:text-2xl font-serif text-purple-300 border-b border-purple-500/30 pb-2 mb-3 sm:mb-4" {...props} />,
+                          h2: ({node, ...props}) => <h2 className="text-lg sm:text-xl font-bold text-white mt-4 sm:mt-6 mb-2 sm:mb-3 flex items-center gap-2" {...props} />,
+                          h3: ({node, ...props}) => <h3 className="text-base sm:text-lg font-semibold text-purple-200 mt-3 sm:mt-4 mb-2" {...props} />,
+                          p: ({node, ...props}) => <p className="mb-3 sm:mb-4 text-gray-200 leading-relaxed text-sm sm:text-base" {...props} />,
+                          ul: ({node, ...props}) => <ul className="list-disc pl-4 sm:pl-5 mb-3 sm:mb-4 text-gray-300 text-sm sm:text-base" {...props} />,
                           li: ({node, ...props}) => <li className="mb-1" {...props} />,
                           strong: ({node, ...props}) => <strong className="text-purple-300 font-bold" {...props} />
                         }}
@@ -312,29 +312,29 @@ const ReadingRoom: React.FC<ReadingRoomProps> = ({ spread, onReset, isTutorialMo
                  </div>
                )}
 
-               {/* Individual Card Interpretations (Hidden if AI reading is present to reduce clutter, or kept for reference? Let's keep them for reference below) */}
+               {/* Individual Card Interpretations */}
                {!aiReading && drawnCards.map((card, index) => {
                  if (!revealedIndices.includes(index)) return null;
                  const position = spread.positions[index];
                  const isReversed = reversedStates[index];
 
                  return (
-                   <div key={card.id} className="animate-in slide-in-from-right duration-500 border-l-2 border-purple-500/20 pl-4 py-2 hover:bg-white/5 transition-colors rounded-r-lg">
+                   <div key={card.id} className="animate-in slide-in-from-right duration-500 border-l-2 border-purple-500/20 pl-3 sm:pl-4 py-2 hover:bg-white/5 transition-colors rounded-r-lg">
                      <div className="flex items-center gap-2 mb-1">
-                       <span className="text-purple-400 text-xs font-bold uppercase tracking-widest">
+                       <span className="text-purple-400 text-[10px] sm:text-xs font-bold uppercase tracking-widest">
                          {position.name}
                        </span>
                        {isReversed && (
-                         <span className="text-red-400 text-[10px] font-bold border border-red-500/30 px-1 rounded">
+                         <span className="text-red-400 text-[9px] sm:text-[10px] font-bold border border-red-500/30 px-1 rounded">
                            REV
                          </span>
                        )}
                      </div>
-                     <h4 className="text-lg font-bold text-white mb-1 font-serif">{card.name}</h4>
-                     <p className="text-xs text-purple-200/80 mb-2 italic">
+                     <h4 className="text-base sm:text-lg font-bold text-white mb-1 font-serif">{card.name}</h4>
+                     <p className="text-[10px] sm:text-xs text-purple-200/80 mb-2 italic leading-tight">
                        "{isReversed ? card.meaningReversed : card.meaningUpright}"
                      </p>
-                     <p className="text-sm text-gray-400 leading-relaxed">
+                     <p className="text-xs sm:text-sm text-gray-400 leading-relaxed">
                        {card.description}
                      </p>
                    </div>
