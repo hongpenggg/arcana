@@ -17,15 +17,14 @@ const ReadingRoom: React.FC<ReadingRoomProps> = ({ spread, onReset, isTutorialMo
   const [revealedIndices, setRevealedIndices] = useState<number[]>([]);
   const [reversedStates, setReversedStates] = useState<boolean[]>([]);
   const [isShuffling, setIsShuffling] = useState(true);
-  
+
   // AI State
   const [aiReading, setAiReading] = useState<string>('');
   const [isLoadingAI, setIsLoadingAI] = useState(false);
 
   // Tutorial State
-  const [tutorialStep, setTutorialStep] = useState(1); // 1: Shuffle wait, 2: Draw, 3: Reveal, 4: Interpret
+  const [tutorialStep, setTutorialStep] = useState(1);
 
-  // Initialize deck and shuffle on mount
   useEffect(() => {
     const newDeck = [...ALL_CARDS];
     for (let i = newDeck.length - 1; i > 0; i--) {
@@ -33,50 +32,39 @@ const ReadingRoom: React.FC<ReadingRoomProps> = ({ spread, onReset, isTutorialMo
       [newDeck[i], newDeck[j]] = [newDeck[j], newDeck[i]];
     }
     setDeck(newDeck);
-    
     setTimeout(() => {
       setIsShuffling(false);
       if (isTutorialMode) setTutorialStep(2);
-    }, 2000); // Longer shuffle for effect
+    }, 2000);
   }, [isTutorialMode]);
 
   const handleDraw = () => {
     if (drawnCards.length >= spread.positions.length) return;
-
     const nextCard = deck[drawnCards.length];
-    const isReversed = Math.random() < 0.2; 
-
+    const isReversed = Math.random() < 0.2;
     setDrawnCards([...drawnCards, nextCard]);
     setReversedStates([...reversedStates, isReversed]);
-
-    if (isTutorialMode && drawnCards.length === 0) {
-      setTutorialStep(3);
-    }
+    if (isTutorialMode && drawnCards.length === 0) setTutorialStep(3);
   };
 
   const handleReveal = (index: number) => {
     if (!revealedIndices.includes(index)) {
       setRevealedIndices([...revealedIndices, index]);
-      
-      if (isTutorialMode && revealedIndices.length === 0) {
-        setTutorialStep(4);
-      }
+      if (isTutorialMode && revealedIndices.length === 0) setTutorialStep(4);
     }
   };
 
   const generateFullReading = async () => {
     setIsLoadingAI(true);
     try {
-      const apiKey = import.meta.env.VITE_OPENROUTER_API_KEY;
-      
-      if (!apiKey) {
-        throw new Error('OpenRouter API key not configured. Please add VITE_OPENROUTER_API_KEY to your .env.local file or repository secrets.');
-      }
-
-      const cardSummaries = drawnCards.map((card, i) => {
-        const pos = spread.positions[i];
-        return `${pos.name}: ${card.name} (${reversedStates[i] ? 'Reversed' : 'Upright'}) - Context: ${pos.description}`;
-      }).join('\n');
+      const cardSummaries = drawnCards
+        .map((card, i) => {
+          const pos = spread.positions[i];
+          return `${pos.name}: ${card.name} (${
+            reversedStates[i] ? 'Reversed' : 'Upright'
+          }) - Context: ${pos.description}`;
+        })
+        .join('\n');
 
       const prompt = `You are a mystical, wise, and highly experienced Tarot Reader. Your goal is to provide a profound, tangible, and actionable reading for the user based on the ${spread.name} spread.
 
@@ -84,45 +72,36 @@ const ReadingRoom: React.FC<ReadingRoomProps> = ({ spread, onReset, isTutorialMo
       ${cardSummaries}
 
       Please provide your response in valid Markdown format. Do NOT use standard markdown code blocks (backticks) for the whole text, just format the content itself.
-      
+
       Structure your response as follows:
       # The Reading
       A brief, mystical opening setting the scene.
-      
+
       ## ✧ The Energy of the Spread
       Synthesize the overall story the cards are telling together. How do they interact?
-      
+
       ## ✧ Detailed Card Analysis
       (For each card, provide a dedicated section like "### [Card Name] as [Position]")
       Provide specific interpretation relevant to the position.
-      
-      ## ✧ Actionable Guidance
-      This is the most important part. Provide 3 concrete, tangible steps the user can take based on this reading. Be specific, not generic. 
-      
-      ## ✧ Final Reflection
-      A closing thought or affirmation.
-      `;
 
-      // Call OpenRouter API
-      const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+      ## ✧ Actionable Guidance
+      This is the most important part. Provide 3 concrete, tangible steps the user can take based on this reading. Be specific, not generic.
+
+      ## ✧ Final Reflection
+      A closing thought or affirmation.`;
+
+      const response = await fetch('/api/openrouter', {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${apiKey}`,
-          'Content-Type': 'application/json',
-          'HTTP-Referer': window.location.origin,
-          'X-Title': 'Arcana Mystica',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           model: 'openrouter/free',
           messages: [
             {
               role: 'system',
-              content: 'You are a mystical, wise, and highly experienced Tarot Reader who provides profound, tangible, and actionable readings.',
+              content:
+                'You are a mystical, wise, and highly experienced Tarot Reader who provides profound, tangible, and actionable readings.',
             },
-            {
-              role: 'user',
-              content: prompt,
-            },
+            { role: 'user', content: prompt },
           ],
           temperature: 0.7,
           max_tokens: 2000,
@@ -131,19 +110,20 @@ const ReadingRoom: React.FC<ReadingRoomProps> = ({ spread, onReset, isTutorialMo
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(`OpenRouter API error: ${response.status} - ${JSON.stringify(errorData)}`);
+        throw new Error(`Oracle proxy error: ${response.status} - ${JSON.stringify(errorData)}`);
       }
 
       const data = await response.json();
-      const text = data.choices[0]?.message?.content || "The mists are too thick to see clearly right now.";
-      
+      const text = data.choices[0]?.message?.content || 'The mists are too thick to see clearly right now.';
       setAiReading(text);
       if (isTutorialMode) onTutorialComplete?.();
-
     } catch (e: any) {
-      console.error('OpenRouter API Error:', e);
-      const errorMessage = e?.message || 'Unknown error';
-      setAiReading(`⚠️ **Connection Error**\n\nThe connection to the ethereal plane was interrupted.\n\nError: ${errorMessage}\n\nPlease ensure your OpenRouter API key is properly configured in .env.local or repository secrets.`);
+      console.error('Oracle Error:', e);
+      setAiReading(
+        `⚠️ **Connection Error**\n\nThe connection to the ethereal plane was interrupted.\n\nError: ${
+          e?.message || 'Unknown error'
+        }\n\nPlease ensure your API keys are configured in Vercel environment variables.`
+      );
     } finally {
       setIsLoadingAI(false);
     }
@@ -157,7 +137,7 @@ const ReadingRoom: React.FC<ReadingRoomProps> = ({ spread, onReset, isTutorialMo
       <div className="flex flex-col items-center justify-center min-h-[60vh] px-4">
         <div className="relative w-24 h-36 sm:w-32 sm:h-48">
           <div className="absolute inset-0 bg-purple-900 border border-purple-500 rounded-xl animate-shuffle shadow-2xl"></div>
-          <div className="absolute inset-0 bg-purple-900 border border-purple-500 rounded-xl" style={{ transform: 'rotate(2deg)'}}></div>
+          <div className="absolute inset-0 bg-purple-900 border border-purple-500 rounded-xl" style={{ transform: 'rotate(2deg)' }}></div>
         </div>
         <p className="mt-6 sm:mt-8 text-lg sm:text-xl font-serif text-white tracking-widest animate-pulse">Shuffling the Deck...</p>
       </div>
@@ -166,8 +146,6 @@ const ReadingRoom: React.FC<ReadingRoomProps> = ({ spread, onReset, isTutorialMo
 
   return (
     <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-8 py-4 md:py-8 animate-in fade-in duration-700 relative">
-      
-      {/* Tutorial Overlays */}
       {isTutorialMode && tutorialStep === 2 && !allCardsDrawn && (
         <div className="absolute top-32 sm:top-40 left-1/2 -translate-x-1/2 z-50 pointer-events-none px-4">
           <div className="bg-purple-600 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-full animate-bounce shadow-[0_0_20px_rgba(147,51,234,0.8)] font-bold text-xs sm:text-sm text-center">
@@ -175,16 +153,15 @@ const ReadingRoom: React.FC<ReadingRoomProps> = ({ spread, onReset, isTutorialMo
           </div>
         </div>
       )}
-      
-      {/* Header */}
+
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0 mb-6 sm:mb-8 glass-panel p-3 sm:p-4 rounded-xl">
         <div>
           <h2 className="text-lg sm:text-xl font-serif text-white">{spread.name}</h2>
           <p className="text-[10px] sm:text-xs text-purple-300 uppercase tracking-widest mt-1">
-            {allCardsRevealed ? "Reading Complete" : "Draw and Reveal"}
+            {allCardsRevealed ? 'Reading Complete' : 'Draw and Reveal'}
           </p>
         </div>
-        <button 
+        <button
           onClick={onReset}
           className="px-3 sm:px-4 py-2 border border-purple-500/30 rounded-lg text-xs sm:text-sm hover:bg-purple-500/20 transition-colors whitespace-nowrap"
         >
@@ -193,81 +170,71 @@ const ReadingRoom: React.FC<ReadingRoomProps> = ({ spread, onReset, isTutorialMo
       </div>
 
       <div className="grid gap-6 sm:gap-8 lg:grid-cols-12">
-        
-        {/* Left Side: The Spread Board */}
         <div className="lg:col-span-8 flex flex-col items-center">
-          
-          {/* Draw Pile */}
           {!allCardsDrawn && (
             <div className="mb-8 sm:mb-12 text-center">
-              <div 
-                onClick={handleDraw} 
+              <div
+                onClick={handleDraw}
                 className="relative cursor-pointer group w-24 h-36 sm:w-32 sm:h-48 md:w-40 md:h-64 mx-auto transition-transform active:scale-95"
               >
-                 <div className="absolute top-2 left-2 w-full h-full bg-purple-900 rounded-xl border border-purple-500/30"></div>
-                 <div className="absolute top-1 left-1 w-full h-full bg-purple-900 rounded-xl border border-purple-500/30"></div>
-                 <div className="absolute top-0 left-0 w-full h-full z-10 hover:shadow-[0_0_15px_rgba(168,85,247,0.5)] transition-shadow rounded-xl">
-                    <Card isRevealed={false} />
-                 </div>
+                <div className="absolute top-2 left-2 w-full h-full bg-purple-900 rounded-xl border border-purple-500/30"></div>
+                <div className="absolute top-1 left-1 w-full h-full bg-purple-900 rounded-xl border border-purple-500/30"></div>
+                <div className="absolute top-0 left-0 w-full h-full z-10 hover:shadow-[0_0_15px_rgba(168,85,247,0.5)] transition-shadow rounded-xl">
+                  <Card isRevealed={false} />
+                </div>
               </div>
             </div>
           )}
 
-          {/* Slots */}
           <div className="flex flex-wrap justify-center gap-3 sm:gap-4 md:gap-8 max-w-full">
             {spread.positions.map((pos, index) => {
               const card = drawnCards[index];
               const isRevealed = revealedIndices.includes(index);
               const isReversed = reversedStates[index];
-
               return (
                 <div key={pos.id} className="flex flex-col items-center gap-2 sm:gap-3 relative">
-                   {/* Tutorial Pointer for Reveal */}
-                   {isTutorialMode && tutorialStep === 3 && card && !isRevealed && index === 0 && (
-                      <div className="absolute -top-10 sm:-top-12 z-50 pointer-events-none">
-                        <div className="bg-purple-600 text-white px-3 sm:px-4 py-1 sm:py-2 rounded-full animate-bounce shadow-lg text-[10px] sm:text-xs font-bold whitespace-nowrap">
-                           Tap to reveal
-                        </div>
+                  {isTutorialMode && tutorialStep === 3 && card && !isRevealed && index === 0 && (
+                    <div className="absolute -top-10 sm:-top-12 z-50 pointer-events-none">
+                      <div className="bg-purple-600 text-white px-3 sm:px-4 py-1 sm:py-2 rounded-full animate-bounce shadow-lg text-[10px] sm:text-xs font-bold whitespace-nowrap">
+                        Tap to reveal
                       </div>
-                   )}
-
+                    </div>
+                  )}
                   <div className="relative">
-                    {/* Placeholder slot */}
                     {!card && (
                       <div className="w-20 h-32 sm:w-24 sm:h-40 md:w-40 md:h-64 border-2 border-dashed border-white/10 rounded-xl flex items-center justify-center bg-white/5 shadow-inner">
                         <span className="text-xl sm:text-2xl md:text-3xl text-white/10">{index + 1}</span>
                       </div>
                     )}
-                    
-                    {/* The Card */}
                     {card && (
                       <div className="animate-in zoom-in duration-500">
-                        <Card 
-                          card={card} 
-                          isRevealed={isRevealed} 
+                        <Card
+                          card={card}
+                          isRevealed={isRevealed}
                           isReversed={isReversed}
                           onClick={() => handleReveal(index)}
-                          className={isRevealed ? "shadow-[0_0_20px_rgba(168,85,247,0.3)]" : ""}
+                          className={isRevealed ? 'shadow-[0_0_20px_rgba(168,85,247,0.3)]' : ''}
                         />
                       </div>
                     )}
                   </div>
                   <div className="text-center max-w-[5rem] sm:max-w-[8rem] md:max-w-[10rem]">
-                    <span className="text-[9px] sm:text-[10px] md:text-xs font-bold text-purple-400 uppercase tracking-wider leading-tight">{pos.name}</span>
+                    <span className="text-[9px] sm:text-[10px] md:text-xs font-bold text-purple-400 uppercase tracking-wider leading-tight">
+                      {pos.name}
+                    </span>
                   </div>
                 </div>
               );
             })}
           </div>
 
-          {/* AI Action Button */}
           {allCardsRevealed && !aiReading && !isLoadingAI && (
-             <button 
-               onClick={generateFullReading}
-               className="mt-8 sm:mt-12 px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full text-white text-sm sm:text-base font-bold tracking-widest shadow-[0_0_30px_rgba(147,51,234,0.4)] hover:shadow-[0_0_50px_rgba(147,51,234,0.6)] transform hover:-translate-y-1 transition-all flex items-center gap-2 sm:gap-3 animate-in slide-in-from-bottom active:scale-95"
-             >
-               <span className="text-lg sm:text-xl">✨</span> CONSULT THE ORACLE
-             </button>
+            <button
+              onClick={generateFullReading}
+              className="mt-8 sm:mt-12 px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full text-white text-sm sm:text-base font-bold tracking-widest shadow-[0_0_30px_rgba(147,51,234,0.4)] hover:shadow-[0_0_50px_rgba(147,51,234,0.6)] transform hover:-translate-y-1 transition-all flex items-center gap-2 sm:gap-3 animate-in slide-in-from-bottom active:scale-95"
+            >
+              <span className="text-lg sm:text-xl">✨</span> CONSULT THE ORACLE
+            </button>
           )}
 
           {isLoadingAI && (
@@ -278,70 +245,82 @@ const ReadingRoom: React.FC<ReadingRoomProps> = ({ spread, onReset, isTutorialMo
           )}
         </div>
 
-        {/* Right Side: Interpretation Panel */}
         <div className="lg:col-span-4 flex flex-col h-full max-h-none lg:max-h-[80vh] mt-6 lg:mt-0">
-           <div className="glass-panel p-4 sm:p-6 rounded-2xl flex-grow overflow-y-auto custom-scrollbar">
-             <h3 className="text-xl sm:text-2xl font-serif text-white mb-4 sm:mb-6 border-b border-white/10 pb-3 sm:pb-4 sticky top-0 bg-transparent backdrop-blur-md z-10">Interpretation</h3>
-             
-             {revealedIndices.length === 0 && (
-               <div className="h-full flex flex-col items-center justify-center text-gray-400 italic opacity-50 py-8">
-                 <span className="text-3xl sm:text-4xl mb-2">🎴</span>
-                 <p className="text-sm sm:text-base">Draw cards to begin...</p>
-               </div>
-             )}
+          <div className="glass-panel p-4 sm:p-6 rounded-2xl flex-grow overflow-y-auto custom-scrollbar">
+            <h3 className="text-xl sm:text-2xl font-serif text-white mb-4 sm:mb-6 border-b border-white/10 pb-3 sm:pb-4 sticky top-0 bg-transparent backdrop-blur-md z-10">
+              Interpretation
+            </h3>
 
-             <div className="space-y-4 sm:space-y-6 pb-16 sm:pb-20">
-               {/* AI Reading Result with ReactMarkdown */}
-               {aiReading && (
-                 <div className="animate-in fade-in duration-1000 bg-purple-900/30 p-4 sm:p-6 rounded-xl border border-purple-500/30 mb-6 sm:mb-8">
-                   <div className="prose prose-invert prose-purple max-w-none prose-sm sm:prose-base">
-                     <ReactMarkdown
-                        components={{
-                          h1: ({node, ...props}) => <h1 className="text-xl sm:text-2xl font-serif text-purple-300 border-b border-purple-500/30 pb-2 mb-3 sm:mb-4" {...props} />,
-                          h2: ({node, ...props}) => <h2 className="text-lg sm:text-xl font-bold text-white mt-4 sm:mt-6 mb-2 sm:mb-3 flex items-center gap-2" {...props} />,
-                          h3: ({node, ...props}) => <h3 className="text-base sm:text-lg font-semibold text-purple-200 mt-3 sm:mt-4 mb-2" {...props} />,
-                          p: ({node, ...props}) => <p className="mb-3 sm:mb-4 text-gray-200 leading-relaxed text-sm sm:text-base" {...props} />,
-                          ul: ({node, ...props}) => <ul className="list-disc pl-4 sm:pl-5 mb-3 sm:mb-4 text-gray-300 text-sm sm:text-base" {...props} />,
-                          li: ({node, ...props}) => <li className="mb-1" {...props} />,
-                          strong: ({node, ...props}) => <strong className="text-purple-300 font-bold" {...props} />
-                        }}
-                     >
-                        {aiReading}
-                     </ReactMarkdown>
-                   </div>
-                 </div>
-               )}
+            {revealedIndices.length === 0 && (
+              <div className="h-full flex flex-col items-center justify-center text-gray-400 italic opacity-50 py-8">
+                <span className="text-3xl sm:text-4xl mb-2">🎴</span>
+                <p className="text-sm sm:text-base">Draw cards to begin...</p>
+              </div>
+            )}
 
-               {/* Individual Card Interpretations */}
-               {!aiReading && drawnCards.map((card, index) => {
-                 if (!revealedIndices.includes(index)) return null;
-                 const position = spread.positions[index];
-                 const isReversed = reversedStates[index];
+            <div className="space-y-4 sm:space-y-6 pb-16 sm:pb-20">
+              {aiReading && (
+                <div className="animate-in fade-in duration-1000 bg-purple-900/30 p-4 sm:p-6 rounded-xl border border-purple-500/30 mb-6 sm:mb-8">
+                  <div className="prose prose-invert prose-purple max-w-none prose-sm sm:prose-base">
+                    <ReactMarkdown
+                      components={{
+                        h1: ({ node, ...props }) => (
+                          <h1 className="text-xl sm:text-2xl font-serif text-purple-300 border-b border-purple-500/30 pb-2 mb-3 sm:mb-4" {...props} />
+                        ),
+                        h2: ({ node, ...props }) => (
+                          <h2 className="text-lg sm:text-xl font-bold text-white mt-4 sm:mt-6 mb-2 sm:mb-3 flex items-center gap-2" {...props} />
+                        ),
+                        h3: ({ node, ...props }) => (
+                          <h3 className="text-base sm:text-lg font-semibold text-purple-200 mt-3 sm:mt-4 mb-2" {...props} />
+                        ),
+                        p: ({ node, ...props }) => (
+                          <p className="mb-3 sm:mb-4 text-gray-200 leading-relaxed text-sm sm:text-base" {...props} />
+                        ),
+                        ul: ({ node, ...props }) => (
+                          <ul className="list-disc pl-4 sm:pl-5 mb-3 sm:mb-4 text-gray-300 text-sm sm:text-base" {...props} />
+                        ),
+                        li: ({ node, ...props }) => <li className="mb-1" {...props} />,
+                        strong: ({ node, ...props }) => (
+                          <strong className="text-purple-300 font-bold" {...props} />
+                        ),
+                      }}
+                    >
+                      {aiReading}
+                    </ReactMarkdown>
+                  </div>
+                </div>
+              )}
 
-                 return (
-                   <div key={card.id} className="animate-in slide-in-from-right duration-500 border-l-2 border-purple-500/20 pl-3 sm:pl-4 py-2 hover:bg-white/5 transition-colors rounded-r-lg">
-                     <div className="flex items-center gap-2 mb-1">
-                       <span className="text-purple-400 text-[10px] sm:text-xs font-bold uppercase tracking-widest">
-                         {position.name}
-                       </span>
-                       {isReversed && (
-                         <span className="text-red-400 text-[9px] sm:text-[10px] font-bold border border-red-500/30 px-1 rounded">
-                           REV
-                         </span>
-                       )}
-                     </div>
-                     <h4 className="text-base sm:text-lg font-bold text-white mb-1 font-serif">{card.name}</h4>
-                     <p className="text-[10px] sm:text-xs text-purple-200/80 mb-2 italic leading-tight">
-                       "{isReversed ? card.meaningReversed : card.meaningUpright}"
-                     </p>
-                     <p className="text-xs sm:text-sm text-gray-400 leading-relaxed">
-                       {card.description}
-                     </p>
-                   </div>
-                 );
-               })}
-             </div>
-           </div>
+              {!aiReading &&
+                drawnCards.map((card, index) => {
+                  if (!revealedIndices.includes(index)) return null;
+                  const position = spread.positions[index];
+                  const isReversed = reversedStates[index];
+                  return (
+                    <div
+                      key={card.id}
+                      className="animate-in slide-in-from-right duration-500 border-l-2 border-purple-500/20 pl-3 sm:pl-4 py-2 hover:bg-white/5 transition-colors rounded-r-lg"
+                    >
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="text-purple-400 text-[10px] sm:text-xs font-bold uppercase tracking-widest">
+                          {position.name}
+                        </span>
+                        {isReversed && (
+                          <span className="text-red-400 text-[9px] sm:text-[10px] font-bold border border-red-500/30 px-1 rounded">
+                            REV
+                          </span>
+                        )}
+                      </div>
+                      <h4 className="text-base sm:text-lg font-bold text-white mb-1 font-serif">{card.name}</h4>
+                      <p className="text-[10px] sm:text-xs text-purple-200/80 mb-2 italic leading-tight">
+                        &ldquo;{isReversed ? card.meaningReversed : card.meaningUpright}&rdquo;
+                      </p>
+                      <p className="text-xs sm:text-sm text-gray-400 leading-relaxed">{card.description}</p>
+                    </div>
+                  );
+                })}
+            </div>
+          </div>
         </div>
       </div>
     </div>
