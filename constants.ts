@@ -228,57 +228,56 @@ export const MAJOR_ARCANA: CardData[] = [
 
 const SUITS = ['Cups', 'Pentacles', 'Swords', 'Wands'] as const;
 const NUMBERS = [
-  { val: 'Ace', name: 'Ace' }, 
-  { val: '2', name: 'Two' }, 
-  { val: '3', name: 'Three' }, 
-  { val: '4', name: 'Four' }, 
-  { val: '5', name: 'Five' }, 
-  { val: '6', name: 'Six' }, 
-  { val: '7', name: 'Seven' }, 
-  { val: '8', name: 'Eight' }, 
-  { val: '9', name: 'Nine' }, 
-  { val: '10', name: 'Ten' }, 
-  { val: 'Page', name: 'Page' }, 
-  { val: 'Knight', name: 'Knight' }, 
-  { val: 'Queen', name: 'Queen' }, 
+  { val: 'Ace', name: 'Ace' },
+  { val: '2', name: 'Two' },
+  { val: '3', name: 'Three' },
+  { val: '4', name: 'Four' },
+  { val: '5', name: 'Five' },
+  { val: '6', name: 'Six' },
+  { val: '7', name: 'Seven' },
+  { val: '8', name: 'Eight' },
+  { val: '9', name: 'Nine' },
+  { val: '10', name: 'Ten' },
+  { val: 'Page', name: 'Page' },
+  { val: 'Knight', name: 'Knight' },
+  { val: 'Queen', name: 'Queen' },
   { val: 'King', name: 'King' }
 ];
 
 export const MINOR_ARCANA: CardData[] = [];
 
-// Improved generation for Minor Arcana to provide more "real" feeling descriptions
 SUITS.forEach(suit => {
   NUMBERS.forEach(num => {
     let meaningUp = "";
     let meaningRev = "";
     let desc = "";
 
-    // Basic procedural generation for meanings based on Suit + Number archetypes
     if (suit === 'Cups') {
-        meaningUp = `The ${num.name} of Cups speaks to the realm of emotions, relationships, and intuition. It suggests a time of emotional ${num.val === 'Ace' ? 'new beginnings and pure love' : num.val === '10' ? 'fulfillment and harmony' : 'experience within the heart'}.`;
-        meaningRev = `Reversed, the ${num.name} of Cups indicates emotional blocks, moodiness, or a disconnect from one's feelings. It asks you to look inward to resolve internal conflicts.`;
-        desc = `The imagery of Cups often involves water, flowing streams, and vessels, symbolizing the fluidity of human emotion.`;
+      meaningUp = `The ${num.name} of Cups speaks to the realm of emotions, relationships, and intuition. It suggests a time of emotional ${num.val === 'Ace' ? 'new beginnings and pure love' : num.val === '10' ? 'fulfillment and harmony' : 'experience within the heart'}.`;
+      meaningRev = `Reversed, the ${num.name} of Cups indicates emotional blocks, moodiness, or a disconnect from one's feelings. It asks you to look inward to resolve internal conflicts.`;
+      desc = `The imagery of Cups often involves water, flowing streams, and vessels, symbolizing the fluidity of human emotion.`;
     } else if (suit === 'Wands') {
-        meaningUp = `The ${num.name} of Wands is driven by fire, passion, and creativity. It indicates high energy, ambition, and the ${num.val === 'Ace' ? 'spark of a new idea' : 'momentum towards a goal'}.`;
-        meaningRev = `Reversed, the ${num.name} of Wands suggests burnout, lack of direction, or delays in your plans. The fire may be burning too hot or flickering out.`;
-        desc = `Wands are often depicted with sprouting leaves, showing growth, vitality, and the raw power of nature and will.`;
+      meaningUp = `The ${num.name} of Wands is driven by fire, passion, and creativity. It indicates high energy, ambition, and the ${num.val === 'Ace' ? 'spark of a new idea' : 'momentum towards a goal'}.`;
+      meaningRev = `Reversed, the ${num.name} of Wands suggests burnout, lack of direction, or delays in your plans. The fire may be burning too hot or flickering out.`;
+      desc = `Wands are often depicted with sprouting leaves, showing growth, vitality, and the raw power of nature and will.`;
     } else if (suit === 'Swords') {
-        meaningUp = `The ${num.name} of Swords governs the intellect, logic, and communication. It represents the double-edged nature of the mind—capable of great clarity but also ${num.val === '3' ? 'sorrow' : 'conflict'}.`;
-        meaningRev = `Reversed, the ${num.name} of Swords suggests mental fog, confusion, or hurtful words. It is a call to clear your mind and speak your truth carefully.`;
-        desc = `Swords are sharp and often depicted amidst clouds or wind, symbolizing the swift and sometimes turbulent nature of thought.`;
-    } else { // Pentacles
-        meaningUp = `The ${num.name} of Pentacles deals with the material world: money, work, and health. It indicates manifestation, practical results, and ${num.val === 'Ace' ? 'a tangible opportunity' : 'hard work paying off'}.`;
-        meaningRev = `Reversed, the ${num.name} of Pentacles warns of financial loss, greed, or a lack of focus on practical matters. You may be neglecting your physical reality.`;
-        desc = `Pentacles are coins inscribed with a star, representing the value we place on the material world and the fruits of our labor.`;
+      meaningUp = `The ${num.name} of Swords governs the intellect, logic, and communication. It represents the double-edged nature of the mind—capable of great clarity but also ${num.val === '3' ? 'sorrow' : 'conflict'}.`;
+      meaningRev = `Reversed, the ${num.name} of Swords suggests mental fog, confusion, or hurtful words. It is a call to clear your mind and speak your truth carefully.`;
+      desc = `Swords are sharp and often depicted amidst clouds or wind, symbolizing the swift and sometimes turbulent nature of thought.`;
+    } else {
+      meaningUp = `The ${num.name} of Pentacles deals with the material world: money, work, and health. It indicates manifestation, practical results, and ${num.val === 'Ace' ? 'a tangible opportunity' : 'hard work paying off'}.`;
+      meaningRev = `Reversed, the ${num.name} of Pentacles warns of financial loss, greed, or a lack of focus on practical matters. You may be neglecting your physical reality.`;
+      desc = `Pentacles are coins inscribed with a star, representing the value we place on the material world and the fruits of our labor.`;
     }
 
+    // Use i.picsum.photos (direct CDN, no redirect) instead of picsum.photos (redirects via fastly)
     MINOR_ARCANA.push({
       id: `minor-${suit}-${num.val}`,
       name: `${num.name} of ${suit}`,
       arcana: 'Minor',
       suit: suit,
       number: num.val,
-      imageUrl: `https://picsum.photos/seed/${suit}${num.val}/200/350`, 
+      imageUrl: `https://i.picsum.photos/seed/${suit}${num.val}/200/350.jpg`,
       meaningUpright: meaningUp,
       meaningReversed: meaningRev,
       description: desc
