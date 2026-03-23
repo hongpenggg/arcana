@@ -14,7 +14,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(500).json({ error: 'OPENROUTER_API_KEY is not configured on the server.' });
   }
 
-  const { messages, model = 'openrouter/free', temperature = 0.7, max_tokens = 5000 } = req.body;
+  const { messages, model = 'arcee-ai/trinity-large-preview:free', temperature = 0.7, max_tokens = 5000 } = req.body;
 
   if (!messages || !Array.isArray(messages)) {
     return res.status(400).json({ error: 'Missing or invalid messages array in request body.' });
