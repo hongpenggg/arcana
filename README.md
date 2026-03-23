@@ -20,7 +20,7 @@
 
 ## 🌟 Overview
 
-Arcana Mystica is a modern, AI-powered Tarot reading web application that combines ancient mystical wisdom with cutting-edge technology. Built with React 19 and powered by OpenRouter's Pony Alpha model, it offers an immersive, interactive experience for spiritual guidance and self-reflection.
+Arcana Mystica is a modern, AI-powered Tarot reading web application that combines ancient mystical wisdom with cutting-edge technology. Built with React 19 and powered by Arcee AI's Trinity Large model, it offers an immersive, interactive experience for spiritual guidance and self-reflection.
 
 <div align="center">
 
@@ -147,7 +147,7 @@ npm run type-check # TypeScript type checking
 
 - **Frontend**: React 19 + TypeScript
 - **Build Tool**: Vite 6.2
-- **AI**: OpenRouter Pony Alpha (free model with 200K context)
+- **AI**: Arcee AI's Trinity Large (free model with 200K context)
 - **Styling**: Tailwind CSS + Custom Animations
 - **Markdown**: react-markdown for formatted readings
 - **Deployment**: GitHub Pages
@@ -228,7 +228,7 @@ This project is open source and available under the MIT License.
 ## 🙏 Acknowledgments
 
 - **Rider-Waite Tarot Deck** - Classic imagery (public domain)
-- **OpenRouter & Pony Alpha** - Free AI-powered interpretations
+- **OpenRouter & Arcee AI** - Free AI-powered interpretations
 - **React Team** - Amazing framework
 - **Tarot Community** - Endless inspiration
 
